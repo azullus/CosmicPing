@@ -1,4 +1,5 @@
-![cosmicping_readme_icon_128](https://github.com/user-attachments/assets/7d7610fd-7d2f-4f88-84ba-bb15b9dfc218)
+![cosmic_ping_light](https://github.com/user-attachments/assets/469ea69c-5952-4028-8bbc-e02168925302)
+
 
 
 **CosmicPingModern** is a modern, lightweight, multi‑host ping monitoring tool for Windows. It builds on the original WinPing utility by **WinPing** and leverages the WinForms DataVisualization chart to plot live ping response times for multiple hosts simultaneously.
