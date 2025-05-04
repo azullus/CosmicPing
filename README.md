@@ -40,7 +40,7 @@
 
 ## Credits
 
-* **WinPing** by **WinPing**: the original command‑line ping visualizer that inspired this GUI.
+* **WinPing** by **WinPing**: the original ping visualizer that inspired this GUI.
 ---
 
 *Powered by .NET 7.0 and WinForms.DataVisualization*
