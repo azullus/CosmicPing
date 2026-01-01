@@ -1,47 +1,80 @@
-![cosmic_ping_light](https://github.com/user-attachments/assets/469ea69c-5952-4028-8bbc-e02168925302)
+# WinPing Modern
 
-
-
-**CosmicPingModern** is a modern, lightweight, multi‑host ping monitoring tool for Windows. It builds on the original WinPing utility by **WinPing** and leverages the WinForms DataVisualization chart to plot live ping response times for multiple hosts simultaneously.
-
----
+> Network ping utility with live charting and CSV export.
 
 ## Features
 
-* **Multi‑host support**: Monitor pings to as many targets as you like, each displayed in its own colored line.
-* **Interactive chart**: Zoom, pan, and scroll with mouse selection and wheel support.
-* **Time‑range buttons**: Quick‑access buttons for 1H, 6H, 12H, and 24H views of your data.
-* **Customizable**: Adjust packet size, timeout, and count before starting.
-* **Live log & export**: View real‑time text logs and export your session to CSV with:
+- **Continuous Ping**: Ping any hostname or IP address with configurable intervals
+- **Live Statistics**: Real-time min/max/avg latency and packet loss tracking
+- **Visual Chart**: Text-based latency visualization
+- **CSV Export**: Export results for analysis in Excel or other tools
+- **Configurable**: Adjustable timeout, buffer size, and ping interval
+- **Memory Safe**: Built-in result retention limits prevent memory leaks
 
-  * **Summary** of attempts, drops, max/avg latencies
-  * **Events** list with timestamp, latency, & drop flag
-  * **Full log** of every ping attempt
-* **Portable**: Single‑file, self‑contained executable for easy distribution.
+## Requirements
 
----
+- Windows 10/11
+- .NET 8.0 Runtime
+
+## Building
+
+```bash
+# Build the project
+dotnet build --configuration Release
+
+# Run the application
+dotnet run
+
+# Publish as standalone executable
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+```
 
 ## Usage
 
-1. **Launch** the `CosmicPingModern.exe` executable.
-2. **Enter** one hostname or IP per line in the **Hosts** panel.
-3. **Set** packet size, timeout (ms), and count (0 = infinite).
-4. **Click** **Start** to begin pinging and plotting.
-5. **Use** time‑range buttons to focus on recent history.
-6. **Export** your data at any time via the **Export** button.
+1. Enter a hostname or IP address (default: `8.8.8.8`)
+2. Adjust settings:
+   - **Timeout**: How long to wait for each reply (100-30000 ms)
+   - **Buffer**: Packet size in bytes (1-65500)
+   - **Interval**: Time between pings (100-60000 ms)
+3. Click **Start** to begin pinging
+4. Click **Stop** to end the session
+5. Click **Export CSV** to save results
 
----
+## Memory Management
 
-## Installation
+This version addresses the memory leak issues from v1.0:
 
-1. **Download** the latest release from the [[Releases](https://github.com/azullus/CosmicPing/releases)](https://github.com/azullus/CosmicPing/releases) page.
-2. **Run** `CosmicPingModern.exe` — no installation required.
+- **Ping objects**: Properly disposed using `using` statements
+- **CancellationTokenSource**: Disposed in `finally` block and form disposal
+- **Result retention**: Limited to 1000 entries (configurable via `MaxResultsRetention`)
+- **Error handling**: No empty catch blocks; all errors properly logged
 
----
+## Architecture
 
-## Credits
+```
+WinPing/
+├── WinPing.sln           # Solution file
+├── WinPing.csproj        # Project file (.NET 8)
+├── Program.cs            # Entry point
+├── MainForm.cs           # Main form logic
+├── MainForm.Designer.cs  # UI layout
+├── PingResult.cs         # Data model
+└── README.md             # This file
+```
 
-* **WinPing** by **WinPing**: the original ping visualizer that inspired this GUI.
----
+## CSV Export Format
 
-*Powered by .NET 7.0 and WinForms.DataVisualization*
+```csv
+Sequence,Timestamp,Host,IPAddress,RoundtripMs,Status,TTL,BufferSize
+1,2025-12-27 22:30:45.123,8.8.8.8,8.8.8.8,15,Success,117,32
+2,2025-12-27 22:30:46.130,8.8.8.8,8.8.8.8,14,Success,117,32
+```
+
+## Version History
+
+- **v2.0.0** (2025-12-27): Complete rewrite with proper resource disposal
+- **v1.0.0** (2025-06): Initial release (deprecated due to memory leaks)
+
+## License
+
+MIT License - See [LICENSE](../../LICENSE) in repository root.

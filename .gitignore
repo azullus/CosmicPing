@@ -1,0 +1,52 @@
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+[Bb]uild/
+x64/
+x86/
+[Aa]rtifacts/
+
+# .NET
+*.dll
+*.exe
+*.pdb
+*.user
+*.suo
+*.cache
+*.ilk
+*.log
+*.sdf
+*.unsuccessfulbuild
+*.metaproj
+*.tmp
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Test results
+TestResults/
+*.trx
+*.coveragexml
+coverage/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+*.swp
+*.swo
+.vscode/
+.idea/

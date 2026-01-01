@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>ping.ico</ApplicationIcon>
+    <AssemblyName>WinPing</AssemblyName>
+    <RootNamespace>WinPing</RootNamespace>
+    <Version>2.0.0</Version>
+    <Company>CosmicBytez</Company>
+    <Product>WinPing Modern</Product>
+    <Description>Network ping utility with live charting and CSV export</Description>
+    <Copyright>Copyright (c) 2025 CosmicBytez</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+</Project>
