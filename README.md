@@ -376,6 +376,14 @@ A: Yes, it's MIT licensed. Free for personal and commercial use.
 ### Infrastructure & DevOps
 - **[docker-infrastructure](https://github.com/azullus/docker-infrastructure)** - Docker Compose IaC for self-hosted homelab services
 - **[bc-docker-manager](https://github.com/azullus/bc-docker-manager)** - Electron desktop app for Business Central Docker containers
+- **[cosmicbytez-homelab](https://github.com/azullus/cosmicbytez-homelab)** - Home lab infrastructure, Proxmox VMs, and media server documentation
+
+### Security Operations
+- **[cosmicbytez-secops](https://github.com/azullus/cosmicbytez-secops)** - Security operations, PNPT training, and ethical hacking resources
+
+### Personal Applications
+- **[budget-tracker](https://github.com/azullus/budget-tracker)** - Next.js PWA for household budget tracking
+- **[fitness-tracker](https://github.com/azullus/fitness-tracker)** - Next.js PWA for personal fitness and nutrition tracking
 
 ---
 
