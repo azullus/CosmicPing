@@ -2,6 +2,15 @@
 
 > Network ping utility with live charting and CSV export.
 
+[![Release](https://img.shields.io/github/v/release/azullus/CosmicPing?logo=github)](https://github.com/azullus/CosmicPing/releases)
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=.net&logoColor=white)](https://dotnet.microsoft.com/)
+[![C#](https://img.shields.io/badge/C%23-12-239120?logo=csharp&logoColor=white)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?logo=windows&logoColor=white)]()
+[![License](https://img.shields.io/github/license/azullus/CosmicPing)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/azullus/CosmicPing?style=flat)](https://github.com/azullus/CosmicPing/stargazers)
+[![Issues](https://img.shields.io/github/issues/azullus/CosmicPing)](https://github.com/azullus/CosmicPing/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/azullus/CosmicPing)](https://github.com/azullus/CosmicPing/commits/main)
+
 ## Features
 
 - **Continuous Ping**: Ping any hostname or IP address with configurable intervals
