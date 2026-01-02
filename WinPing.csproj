@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationIcon>ping.ico</ApplicationIcon>
+    <!-- <ApplicationIcon>ping.ico</ApplicationIcon> -->
     <AssemblyName>WinPing</AssemblyName>
     <RootNamespace>WinPing</RootNamespace>
     <Version>2.0.0</Version>
