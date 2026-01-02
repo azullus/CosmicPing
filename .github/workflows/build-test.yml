@@ -1,0 +1,51 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore WinPing.sln
+
+    - name: Build solution
+      run: dotnet build WinPing.sln --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test WinPing.sln --configuration Release --no-build --verbosity normal
+
+    - name: Publish artifact
+      if: github.ref == 'refs/heads/main'
+      run: |
+        dotnet publish WinPing.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --self-contained true `
+          -p:PublishSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:EnableCompressionInSingleFile=true `
+          --output publish
+
+    - name: Upload build artifact
+      if: github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v4
+      with:
+        name: WinPing-build-${{ github.sha }}
+        path: publish/WinPing.exe
+        retention-days: 30

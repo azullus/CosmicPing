@@ -1,0 +1,179 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v2.1.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Get version
+      id: version
+      shell: pwsh
+      run: |
+        if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch') {
+          $version = "${{ github.event.inputs.version }}"
+        } else {
+          $version = $env:GITHUB_REF -replace 'refs/tags/', ''
+        }
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        echo "VERSION_NUM=$($version -replace '^v', '')" >> $env:GITHUB_OUTPUT
+
+    - name: Restore dependencies
+      run: dotnet restore WinPing.sln
+
+    - name: Build solution
+      run: dotnet build WinPing.sln --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test WinPing.sln --configuration Release --no-build --verbosity normal
+
+    - name: Publish self-contained executable
+      shell: pwsh
+      run: |
+        dotnet publish WinPing.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --self-contained true `
+          -p:PublishSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:EnableCompressionInSingleFile=true `
+          -p:Version=${{ steps.version.outputs.VERSION_NUM }} `
+          --output publish
+
+    - name: Create installer package
+      shell: pwsh
+      run: |
+        $version = "${{ steps.version.outputs.VERSION }}"
+        $installerDir = "WinPing-$version"
+
+        # Create installer directory structure
+        New-Item -ItemType Directory -Force -Path $installerDir
+
+        # Copy executable
+        Copy-Item "publish\WinPing.exe" $installerDir\
+
+        # Create Install.bat
+        @"
+        @echo off
+        echo ========================================
+        echo WinPing Installation
+        echo Version: $version
+        echo ========================================
+        echo.
+
+        set "INSTALL_DIR=%ProgramFiles%\WinPing"
+        set "SHORTCUT_DIR=%ProgramData%\Microsoft\Windows\Start Menu\Programs"
+
+        echo Creating installation directory...
+        if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
+
+        echo Copying files...
+        copy /Y WinPing.exe "%INSTALL_DIR%\"
+
+        echo Creating Start Menu shortcut...
+        powershell -Command "`$WshShell = New-Object -ComObject WScript.Shell; `$Shortcut = `$WshShell.CreateShortcut('%SHORTCUT_DIR%\WinPing.lnk'); `$Shortcut.TargetPath = '%INSTALL_DIR%\WinPing.exe'; `$Shortcut.WorkingDirectory = '%INSTALL_DIR%'; `$Shortcut.Description = 'Network Ping Utility'; `$Shortcut.Save()"
+
+        echo Creating Desktop shortcut...
+        powershell -Command "`$WshShell = New-Object -ComObject WScript.Shell; `$Shortcut = `$WshShell.CreateShortcut('%PUBLIC%\Desktop\WinPing.lnk'); `$Shortcut.TargetPath = '%INSTALL_DIR%\WinPing.exe'; `$Shortcut.WorkingDirectory = '%INSTALL_DIR%'; `$Shortcut.Description = 'Network Ping Utility'; `$Shortcut.Save()"
+
+        echo.
+        echo ========================================
+        echo Installation Complete!
+        echo ========================================
+        pause
+        "@ | Out-File -FilePath "$installerDir\Install.bat" -Encoding ASCII
+
+        # Create README.txt
+        @"
+        WinPing $version
+        Network Ping Utility with Live Charting
+
+        INSTALLATION
+        ============
+
+        Method 1: Automated Installation (Recommended)
+        -----------------------------------------------
+        1. Right-click Install.bat
+        2. Select "Run as administrator"
+        3. Follow the prompts
+        4. Launch from Start Menu or Desktop shortcut
+
+        Method 2: Portable Mode
+        -----------------------
+        1. Run WinPing.exe directly from this folder
+        2. No installation required
+
+        USAGE
+        =====
+        1. Enter hostname or IP address (e.g., 8.8.8.8, google.com)
+        2. Adjust timeout, buffer size, and interval as needed
+        3. Click Start to begin pinging
+        4. Click Stop to end the session
+        5. Click Export CSV to save results
+
+        SYSTEM REQUIREMENTS
+        ===================
+        - Windows 10/11 (64-bit)
+        - No .NET installation required (self-contained)
+
+        SUPPORT
+        =======
+        Documentation: https://github.com/azullus/CosmicPing
+        Issues: https://github.com/azullus/CosmicPing/issues
+
+        LICENSE
+        =======
+        MIT License - See LICENSE file or GitHub repository
+
+        Copyright (c) 2026 CosmicBytez IT Operations Team
+        "@ | Out-File -FilePath "$installerDir\README.txt" -Encoding UTF8
+
+        # Copy LICENSE if exists
+        if (Test-Path "LICENSE") {
+          Copy-Item "LICENSE" "$installerDir\LICENSE.txt"
+        }
+
+        # Create ZIP
+        Compress-Archive -Path $installerDir -DestinationPath "WinPing-$version-win-x64.zip" -Force
+
+        # Generate checksum
+        $hash = (Get-FileHash "WinPing-$version-win-x64.zip" -Algorithm SHA256).Hash
+        "$hash  WinPing-$version-win-x64.zip" | Out-File -FilePath "WinPing-$version-win-x64.zip.sha256" -Encoding ASCII
+
+        echo "Package created: WinPing-$version-win-x64.zip"
+        echo "SHA256: $hash"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.VERSION }}
+        name: CosmicPing ${{ steps.version.outputs.VERSION }}
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+        files: |
+          WinPing-${{ steps.version.outputs.VERSION }}-win-x64.zip
+          WinPing-${{ steps.version.outputs.VERSION }}-win-x64.zip.sha256
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
