@@ -50,8 +50,70 @@ public static class InputValidator
         if (string.IsNullOrWhiteSpace(host))
             return false;
 
-        // Check if it's a valid hostname or IP
-        return Uri.CheckHostName(host) != UriHostNameType.Unknown;
+        // Trim whitespace before validation
+        host = host.Trim();
+
+        // Try to parse as IPv4 address first (stricter validation than Uri.CheckHostName)
+        if (TryParseIPv4(host, out _))
+            return true;
+
+        // Check if it's a valid hostname using Uri.CheckHostName
+        var hostType = Uri.CheckHostName(host);
+
+        // Accept DNS names, but validate they don't have invalid patterns
+        if (hostType == UriHostNameType.Dns)
+        {
+            // Reject hostnames with labels starting or ending with hyphen
+            var labels = host.Split('.');
+            foreach (var label in labels)
+            {
+                if (string.IsNullOrEmpty(label))
+                    return false;
+                if (label.StartsWith('-') || label.EndsWith('-'))
+                    return false;
+            }
+            return true;
+        }
+
+        // Accept IPv6 addresses and basic names
+        return hostType == UriHostNameType.IPv6 || hostType == UriHostNameType.Basic;
+    }
+
+    /// <summary>
+    /// Tries to parse and validate an IPv4 address.
+    /// More strict than Uri.CheckHostName - requires exactly 4 octets with values 0-255.
+    /// </summary>
+    private static bool TryParseIPv4(string input, out System.Net.IPAddress? ipAddress)
+    {
+        ipAddress = null;
+
+        // Split by dots
+        var parts = input.Split('.');
+        if (parts.Length != 4)
+            return false;
+
+        // Validate each octet
+        var bytes = new byte[4];
+        for (int i = 0; i < 4; i++)
+        {
+            // Must be a valid integer
+            if (!int.TryParse(parts[i], out int value))
+                return false;
+
+            // Must be in range 0-255
+            if (value < 0 || value > 255)
+                return false;
+
+            // No leading zeros unless the value is exactly "0"
+            if (parts[i].Length > 1 && parts[i][0] == '0')
+                return false;
+
+            bytes[i] = (byte)value;
+        }
+
+        // Create the IP address
+        ipAddress = new System.Net.IPAddress(bytes);
+        return true;
     }
 
     /// <summary>
