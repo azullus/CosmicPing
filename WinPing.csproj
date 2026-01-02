@@ -21,4 +21,11 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Exclude test files from main project -->
+    <Compile Remove="WinPing.Tests\**" />
+    <EmbeddedResource Remove="WinPing.Tests\**" />
+    <None Remove="WinPing.Tests\**" />
+  </ItemGroup>
+
 </Project>
