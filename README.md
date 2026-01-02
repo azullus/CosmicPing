@@ -3,6 +3,7 @@
 > Network ping utility with live charting and CSV export.
 
 [![Release](https://img.shields.io/github/v/release/azullus/CosmicPing?logo=github)](https://github.com/azullus/CosmicPing/releases)
+[![Build](https://github.com/azullus/CosmicPing/actions/workflows/build-test.yml/badge.svg)](https://github.com/azullus/CosmicPing/actions/workflows/build-test.yml)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=.net&logoColor=white)](https://dotnet.microsoft.com/)
 [![C#](https://img.shields.io/badge/C%23-12-239120?logo=csharp&logoColor=white)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?logo=windows&logoColor=white)]()
