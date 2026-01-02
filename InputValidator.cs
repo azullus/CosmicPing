@@ -53,9 +53,13 @@ public static class InputValidator
         // Trim whitespace before validation
         host = host.Trim();
 
-        // Try to parse as IPv4 address first (stricter validation than Uri.CheckHostName)
-        if (TryParseIPv4(host, out _))
-            return true;
+        // Check if it looks like an IPv4 address (4 parts separated by dots)
+        var parts = host.Split('.');
+        if (parts.Length == 4 && parts.All(p => p.All(char.IsDigit) && p.Length > 0))
+        {
+            // If it looks like IPv4, it MUST be valid IPv4 (reject invalid octets)
+            return TryParseIPv4(host, out _);
+        }
 
         // Check if it's a valid hostname using Uri.CheckHostName
         var hostType = Uri.CheckHostName(host);
